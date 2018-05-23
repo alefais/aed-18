@@ -74,6 +74,8 @@ int main(int argc, char* argv[]) {
               << std::endl
               << std::endl;
 
+    // --------------------------- assume no VLAN traffic -------------------------------------
+
     // Parse the ethernet header (check the protocol type field, we want it to be IP)
     const struct ether_header* e_hdr = reinterpret_cast<const struct ether_header *> (packet);
     std::cout << "ETH header: "
@@ -93,31 +95,33 @@ int main(int argc, char* argv[]) {
     inet_ntop(AF_INET, reinterpret_cast<const void *>(&ip_hdr->ip_src), ip_src, sizeof(ip_src));
     inet_ntop(AF_INET, reinterpret_cast<const void *>(&ip_hdr->ip_dst), ip_dst, sizeof(ip_dst));
     std::cout << "IP header (version "
-                 << ip_hdr->ip_v
-                 << "): "
-                 << ip_src
-                 << " --> "
-                 << ip_dst
-                 << std::endl;
-
-    // TODO : perchè non è necessario usare la ntohl(ip_hdr->ip_p) ????
-    // TODO : perchè il switch case non funziona?
+              << ip_hdr->ip_v
+              << "): "
+              << ip_src
+              << " --> "
+              << ip_dst
+              << "  (ttl = "
+              << (int)ip_hdr->ip_ttl
+              << ", frame_len = "
+              << ntohs(ip_hdr->ip_len)
+              << ")"
+              << std::endl;
 
     if (ip_hdr->ip_p == IPPROTO_UDP) {
         const struct udphdr* udp_hdr = reinterpret_cast<const struct udphdr*> (ip_hdr + 1);
         std::cout << "UDP packet: "
-                  << udp_hdr->uh_sport
+                  << ntohs(udp_hdr->uh_sport)
                   << " --> "
-                  << udp_hdr->uh_dport
+                  << ntohs(udp_hdr->uh_dport)
                   << std::endl;
     }
 
     if (ip_hdr->ip_p == IPPROTO_TCP) {
         const struct tcphdr* tcp_hdr = reinterpret_cast<const struct tcphdr*> (ip_hdr + 1);
         std::cout << "TCP packet: "
-                  << tcp_hdr->th_sport
+                  << ntohs(tcp_hdr->th_sport)
                   << " --> "
-                  << tcp_hdr->th_dport
+                  << ntohs(tcp_hdr->th_dport)
                   << std::endl;
     }
 
@@ -136,8 +140,6 @@ int main(int argc, char* argv[]) {
                   << ntohs(igmp_hdr->igmp_type)
                   << ", code "
                   << ntohs(igmp_hdr->igmp_code)
-                  << ", group "
-                  << ntohs(igmp_hdr->igmp_group.s_addr) // igmp_group is a group of addresses (struct in_addr)
                   << std::endl;
     }
 

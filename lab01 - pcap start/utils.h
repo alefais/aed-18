@@ -4,10 +4,10 @@
 // A.A. 2017/18
 //
 
-#ifndef AED_PCAP01_UTILS_H
-#define AED_PCAP01_UTILS_H
+#ifndef AED_LAB01_UTILS_H
+#define AED_LAB01_UTILS_H
 
 void print_devs();
 bool find_dev(char* dev);
 
-#endif //AED_PCAP01_UTILS_H
+#endif //AED_LAB01_UTILS_H
