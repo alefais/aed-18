@@ -150,5 +150,7 @@ int main(int argc, char* argv[]) {
             break;
     }
 
+    pcap_close(handle);
+
     return 0;
 }

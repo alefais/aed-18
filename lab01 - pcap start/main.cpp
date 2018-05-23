@@ -143,5 +143,7 @@ int main(int argc, char* argv[]) {
                   << std::endl;
     }
 
+    pcap_close(handle);
+    
     return 0;
 }
