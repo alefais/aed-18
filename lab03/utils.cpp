@@ -16,7 +16,9 @@
 
 #include "utils.h"
 
-// Function called on per-packet basis
+/*
+ * Function called on per-packet basis.
+ */
 void pkt_handler_callback(u_char* user_data, const struct pcap_pkthdr* p_header, const u_char* packet) {
     // Print pcap packet header
     char buf[20];
@@ -31,7 +33,7 @@ void pkt_handler_callback(u_char* user_data, const struct pcap_pkthdr* p_header,
               << "- len portion read: "
               << p_header->caplen
               << std::endl
-              << "- len packet: " // if VLAN it counts 14 bytes (ETH header) + 4 bytes (802.1q header) + IP pkt len
+              << "- len packet: " // if VLAN it counts 14 bytes (ETH header) + 4 bytes (802.1Q header) + IP pkt len
               << p_header->len
               << std::endl
               << std::endl;

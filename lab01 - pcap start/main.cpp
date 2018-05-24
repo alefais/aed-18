@@ -56,7 +56,9 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Print pcap packet header (metadata)
+    // --------------------------- assume no VLAN traffic -------------------------------------
+
+    // Print pcap packet header
     char buf[20];
     strftime(buf, sizeof(buf), "%d/%m/%Y %H:%M:%S", localtime(&p_header.ts.tv_sec));
     std::cout << "pcap packet:"
@@ -69,12 +71,10 @@ int main(int argc, char* argv[]) {
               << "- len portion read: "
               << p_header.caplen
               << std::endl
-              << "- len packet: "
+              << "- len packet: " // it counts 14 bytes (ETH header) + IP pkt len
               << p_header.len
               << std::endl
               << std::endl;
-
-    // --------------------------- assume no VLAN traffic -------------------------------------
 
     // Parse the ethernet header (check the protocol type field, we want it to be IP)
     const struct ether_header* e_hdr = reinterpret_cast<const struct ether_header *> (packet);

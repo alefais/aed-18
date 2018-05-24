@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Print pcap packet header (metadata)
+    // Print pcap packet header
     char buf[20];
     strftime(buf, sizeof(buf), "%d/%m/%Y %H:%M:%S", localtime(&p_header.ts.tv_sec));
     std::cout << "pcap packet:"
@@ -65,7 +65,7 @@ int main(int argc, char* argv[]) {
               << "- len portion read: "
               << p_header.caplen
               << std::endl
-              << "- len packet: " // if VLAN it counts 14 bytes (ETH header) + 4 bytes (802.1q header) + IP pkt len
+              << "- len packet: " // if VLAN it counts 14 bytes (ETH header) + 4 bytes (802.1Q header) + IP pkt len
               << p_header.len
               << std::endl
               << std::endl;
@@ -92,7 +92,9 @@ int main(int argc, char* argv[]) {
               << ether_ntoa(reinterpret_cast<const ether_addr*>(e_hdr->ether_dhost))
               << std::endl;
 
-    const struct ip* ip_hdr = (vlan_hdr) ? reinterpret_cast<const struct ip*>(vlan_hdr + 1) : reinterpret_cast<const struct ip*> (e_hdr + 1);
+    const struct ip* ip_hdr = (vlan_hdr) ?
+                              reinterpret_cast<const struct ip*>(vlan_hdr + 1) :
+                              reinterpret_cast<const struct ip*> (e_hdr + 1);
     char ip_src[16]; // 15 char needed to represent the IP address in dot notation a.b.c.d
     char ip_dst[16];
     int offset = (ip_hdr->ip_hl) * 4;
