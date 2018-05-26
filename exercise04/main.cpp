@@ -10,7 +10,6 @@
 
 #include "pcap_ipset.h"
 
-
 int main(int argc, char* argv[]) {
 
     if (argc < 3) {

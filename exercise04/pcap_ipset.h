@@ -14,7 +14,6 @@ class Pcap_IPset {
 private:
     pcap_t* handle;
     std::unordered_set<u_int32_t> ipaddresses;
-    u_char errbuf[PCAP_ERRBUF_SIZE];
 
 public:
     Pcap_IPset(pcap_t* h);

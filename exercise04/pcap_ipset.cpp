@@ -54,7 +54,6 @@ void Pcap_IPset::callback(u_char* user, const struct pcap_pkthdr* p_header, cons
  * Packet handler method.
  */
 void Pcap_IPset::handler(const struct pcap_pkthdr* p_header, const u_char* packet) {
-
     // Parse packet
     const struct ether_header* e_hdr = reinterpret_cast<const struct ether_header*>(packet);
     const struct vlan_ethhdr* vlan_hdr = nullptr;

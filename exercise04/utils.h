@@ -9,6 +9,9 @@
 
 #include <net/ethernet.h>
 
+/*
+ * 802.1Q header structure.
+ */
 struct vlan_ethhdr {
     u_char h_dest[ETHER_ADDR_LEN];
     u_char h_source[ETHER_ADDR_LEN];
