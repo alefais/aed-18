@@ -20,7 +20,7 @@ using namespace std;
 // ------------------------------------flow definition----------------------------------------- //
 
 /*
- * Flow fields are: source address, destination IP address, source port,
+ * Flow fields are: source IP address, destination IP address, source port,
  * destination port and protocol.
  */
 typedef tuple<u_int32_t, u_int32_t, u_int16_t, u_int16_t, string> key_f;
