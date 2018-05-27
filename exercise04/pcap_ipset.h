@@ -11,10 +11,6 @@
 #include <unordered_set>
 
 class Pcap_IPset {
-private:
-    pcap_t* handle;
-    std::unordered_set<u_int32_t> ipaddresses;
-
 public:
     Pcap_IPset(pcap_t* h);
     ~Pcap_IPset();
@@ -23,6 +19,10 @@ public:
     static void callback(u_char* user, const struct pcap_pkthdr* p_header, const u_char* packet);
     void handler(const struct pcap_pkthdr* p_header, const u_char* packet);
     void list();
+
+private:
+    pcap_t* handle;
+    std::unordered_set<u_int32_t> ipaddresses;
 };
 
 #endif //AED_LAB04_PCAP_IPSET_H

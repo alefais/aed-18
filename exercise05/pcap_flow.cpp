@@ -6,9 +6,9 @@
 
 #include <iostream>
 #include <iomanip>
-#include <regex>
 #include <sstream>
 #include <string>
+#include <cstring>
 #include <stdexcept>
 #include <tuple>
 #include <pcap.h>
@@ -30,7 +30,10 @@ using namespace std;
  * \throw std::invalid_argument exception if the pcap handle is NULL
  */
 Pcap_flow::Pcap_flow(pcap_t *h) {
-    if (h != nullptr) handle = h;
+    if (h != nullptr) {
+        handle = h;
+        bloomfilter = new CountingBF(100, 2);
+    }
     else throw invalid_argument("pcap handle is null");
 }
 
@@ -102,20 +105,23 @@ void Pcap_flow::handler(const struct pcap_pkthdr* p_header, const u_char* packet
             break;
     }
 
-    // insert a new flow of increment the number of packets for an existing flow
-    const tuple<u_int32_t, u_int32_t, u_int16_t, u_int16_t, string> key = make_tuple(ip_src, ip_dst, port_src, port_dst, prot);
+    // insert a new flow in the map or increment the number of packets for an existing flow
+    const key_f key = make_tuple(ip_src, ip_dst, port_src, port_dst, prot);
     if (flows.count(key) == 0)
         flows[key] = 1;
     else
         flows[key]++;
 
-    // (TEST: counter set vs counting bloom filter)
+    // add the flow in the bloom filter
+    ostringstream buf;
+    buf << ip_src << ip_dst << port_src << port_dst << prot; // serialize the flow tuple
+    bloomfilter->add(buf.str().c_str(), strlen(buf.str().c_str()));
 }
 
 /*
  * Construct a string from the flow tuple.
  */
-string Pcap_flow::print_flow(const tuple<u_int32_t, u_int32_t, u_int16_t, u_int16_t, string>* t) {
+pair<string, string> print_flow(const key_f* t) {
     u_int32_t ipsrc, ipdst;
     u_int16_t psrc, pdst;
     string prot;
@@ -137,7 +143,10 @@ string Pcap_flow::print_flow(const tuple<u_int32_t, u_int32_t, u_int16_t, u_int1
        << ntohs(pdst)
        << setw(13) << left
        << prot;
-    return ss.str();
+
+    ostringstream buf;
+    buf << ipsrc << ipdst << psrc << pdst << prot; // serialize the flow tuple
+    return pair<string, string>(ss.str(), buf.str());
 }
 
 /*
@@ -158,12 +167,23 @@ void Pcap_flow::list() {
               << "Port dst"
               << setw(11) << left
               << "Protocol"
-              << setw(6) << left
-              << "pkt_count\n";
-    for (auto f : flows) {
-        cout << print_flow(&f.first) // flow
-             << setw(6) << left
+              << setw(11) << left
+              << "pkt_count"
+              << setw(11) << left
+              << "bf_value"
+              << setw(10) << left
+              << "cbf_value\n";
+    for (const auto f : flows) {
+        pair<string, string> p = print_flow(&f.first);
+        cout << p.first // flow tuple
+             << setw(12) << left
              << f.second // number of packets per flow
+             << setw(11) << left
+             << bloomfilter->lookup(p.second.c_str(), strlen(p.second.c_str())) // bloom filter value {0, 1}
+             << setw(6) << left
+             << bloomfilter->counting_lookup(p.second.c_str(), strlen(p.second.c_str())) // counting bloom filter value
              << endl;
     }
+    bloomfilter->bf_printstate();
+    bloomfilter->countingbf_printstate();
 }

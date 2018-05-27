@@ -14,8 +14,9 @@
 #include <unordered_set>
 #include <unordered_map>
 
-using namespace std;
+#include "counting_bloomfilter.h"
 
+using namespace std;
 
 // ------------------------------------flow definition----------------------------------------- //
 
@@ -41,8 +42,8 @@ struct key_equal : public binary_function<key_f, key_f, bool> {
 // ------------------------------------map definition------------------------------------------ //
 
 /*
- * Flow counter: (<key, value> unordered map) with key field the tuple that uniquely identifies
- * a flow and value field a counter of the packets belonging to that particular flow.
+ * Flow counter: <key, value> unordered map where key field is the tuple that uniquely identifies
+ * a flow and value field is a counter of the packets belonging to that particular flow.
  */
 typedef unordered_map<const key_f, unsigned long long, key_hash, key_equal> map_f;
 
@@ -50,10 +51,6 @@ typedef unordered_map<const key_f, unsigned long long, key_hash, key_equal> map_
 // ------------------------------------class definition---------------------------------------- //
 
 class Pcap_flow {
-private:
-    pcap_t* handle;
-    map_f flows; // implements the flow counter
-
 public:
     Pcap_flow(pcap_t* h);
     ~Pcap_flow();
@@ -61,8 +58,12 @@ public:
     void sniff(int num_pkt);
     static void callback(u_char* user, const struct pcap_pkthdr* p_header, const u_char* packet);
     void handler(const struct pcap_pkthdr* p_header, const u_char* packet);
-    string print_flow(const tuple<u_int32_t, u_int32_t, u_int16_t, u_int16_t, string>* t);
     void list();
+
+private:
+    pcap_t* handle;
+    map_f flows; // implements the flow counter
+    CountingBF* bloomfilter; // counting bloom filter
 };
 
 #endif //AED_LAB05_PCAP_FLOW_H
