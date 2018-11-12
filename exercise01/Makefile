@@ -1,4 +1,4 @@
-CXX      = g++-8
+CXX      = g++
 CXXFLAGS = -Wall -Wextra -std=c++11
 INCLUDES = -I /usr/include/pcap
 LIBFLAGS = -lpcap
