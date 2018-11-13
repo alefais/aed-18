@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
 
     pcap_t* handle = nullptr;
     switch (argv[1][1]) {
-        case 'n':
+        case 'i':
             handle = pcap_open_live(argv[2], 100, 1, 1000, err_buf);
             break;
         case 'f':
