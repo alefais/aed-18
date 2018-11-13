@@ -1,5 +1,5 @@
 # aed-18: exercises and final project 
-Lab exercises and final project of the Packet Switching and Processing Architectures course of the Computer Science and Networking Master's Degree @ University of Pisa
+Lab exercises and final project of the Packet Switching and Processing Architectures course of the Computer Science and Networking Master's Degree @ University of Pisa.
 
 | <b>Exercise number</b> | <b>Language/Framework/Tool</b> | <b>Description</b> |
 | ---------- | ----------------------- | ----------- |
